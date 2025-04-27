@@ -1,0 +1,99 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace AVLTreeTests
+{
+    [TestClass]
+    public class AVLTreeTests
+    {
+        private AVLTree tree;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            tree = new AVLTree();
+        }
+
+        [TestMethod]
+        public void Insert_SingleNode_ShouldHaveCorrectRoot()
+        {
+            tree.Insert(10);
+
+            // Simular la impresión del recorrido
+            string output = CapturePreOrder(tree);
+            Assert.AreEqual("10", output.Trim());
+        }
+
+        [TestMethod]
+        public void Insert_MultipleNodes_ShouldBalanceCorrectly()
+        {
+            tree.Insert(10);
+            tree.Insert(20);
+            tree.Insert(30); // Rotación esperada
+
+            string output = CapturePreOrder(tree);
+            Assert.AreEqual("20 10 30", output.Trim());
+        }
+
+        [TestMethod]
+        public void Delete_LeafNode_ShouldRemoveLeaf()
+        {
+            tree.Insert(10);
+            tree.Insert(20);
+            tree.Insert(5);
+
+            tree.Delete(5);
+
+            string output = CapturePreOrder(tree);
+            Assert.AreEqual("10 20", output.Trim());
+        }
+
+        [TestMethod]
+        public void Delete_NodeWithOneChild_ShouldReplaceNode()
+        {
+            tree.Insert(10);
+            tree.Insert(5);
+            tree.Insert(2);
+
+            tree.Delete(5);
+
+            string output = CapturePreOrder(tree);
+            Assert.AreEqual("10 2", output.Trim());
+        }
+
+        [TestMethod]
+        public void Delete_NodeWithTwoChildren_ShouldFindSuccessor()
+        {
+            tree.Insert(20);
+            tree.Insert(10);
+            tree.Insert(30);
+            tree.Insert(25);
+            tree.Insert(40);
+
+            tree.Delete(30);
+
+            string output = CapturePreOrder(tree);
+            Assert.AreEqual("20 10 40 25", output.Trim());
+        }
+
+        [TestMethod]
+        public void PreOrder_EmptyTree_ShouldReturnNothing()
+        {
+            string output = CapturePreOrder(tree);
+            Assert.AreEqual(string.Empty, output.Trim());
+        }
+
+        // Método auxiliar para capturar la salida de PreOrder()
+        private string CapturePreOrder(AVLTree tree)
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                Console.SetOut(sw);
+                tree.PreOrder();
+                return sw.ToString().Trim();
+            }
+        }
+    }
+}
